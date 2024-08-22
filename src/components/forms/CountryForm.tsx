@@ -1,6 +1,24 @@
-import React from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 
-const CountryForm = ({ country, onChange, onSubmit, errors }) => {
+interface CountryFormProps {
+  country: {
+    country_name: string;
+    country_code: string;
+  };
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  errors: {
+    country_name?: string;
+    country_code?: string;
+  };
+}
+
+const CountryForm: React.FC<CountryFormProps> = ({
+  country,
+  onChange,
+  onSubmit,
+  errors,
+}) => {
   return (
     <form onSubmit={onSubmit}>
       <div className="mb-4">
@@ -13,7 +31,7 @@ const CountryForm = ({ country, onChange, onSubmit, errors }) => {
         <input
           id="name"
           type="text"
-          name="country_name" // Updated
+          name="country_name"
           value={country.country_name}
           onChange={onChange}
           className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
@@ -35,7 +53,7 @@ const CountryForm = ({ country, onChange, onSubmit, errors }) => {
         <input
           id="code"
           type="text"
-          name="country_code" // Updated
+          name="country_code"
           value={country.country_code}
           onChange={onChange}
           className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${

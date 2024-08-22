@@ -1,20 +1,21 @@
 "use client";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../redux/store"; // Adjust path as needed
 import { fetchBoards } from "../../redux/slices/boardSlice";
 import Link from "next/link";
 import Layout from "../../components/Layout";
 
 const BoardsPage = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch(); // Type dispatch correctly
 
   // Select boards from the Redux store
-  const boards = useSelector((state: any) => state.board.boards || []);
-  const loading = useSelector((state: any) => state.board.loading);
-  const error = useSelector((state: any) => state.board.error);
+  const boards = useSelector((state: RootState) => state.board.boards || []);
+  const loading = useSelector((state: RootState) => state.board.loading);
+  const error = useSelector((state: RootState) => state.board.error);
 
   useEffect(() => {
-    dispatch(fetchBoards());
+    dispatch(fetchBoards()); // Dispatch the async thunk action
   }, [dispatch]);
 
   if (loading) {
@@ -67,8 +68,7 @@ const BoardsPage = () => {
                     <td className="py-2 px-4 text-gray-800">{board.state}</td>
                     <td className="py-2 px-4">
                       <Link
-                        // href={`/boards/${board.id}`}
-                        href={``}
+                        href={`/boards/${board.id}`} // Ensure URL is correct
                         className="text-blue-500 hover:underline"
                       >
                         Edit

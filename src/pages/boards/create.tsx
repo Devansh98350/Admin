@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createBoard } from "../../redux/slices/boardSlice";
 import { fetchCountries } from "../../redux/slices/countrySlice";
 import Layout from "../../components/Layout";
+import { RootState } from "../../redux/store"; // Import RootState
 
 const CreateBoardPage = () => {
   const dispatch = useDispatch();
@@ -15,26 +16,30 @@ const CreateBoardPage = () => {
     country_code: "",
     state: "",
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Fetch countries from countrySlice
-  const countries = useSelector((state: any) => state.country.countries || []);
-  const loading = useSelector((state: any) => state.country.loading);
-  const error = useSelector((state: any) => state.country.error);
+  const { countries, loading, error } = useSelector(
+    (state: RootState) => state.country
+  );
 
   useEffect(() => {
-    dispatch(fetchCountries());
+    dispatch(fetchCountries() as any); // Type assertion to handle thunk
   }, [dispatch]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Assuming you have validation logic here
-    dispatch(createBoard(board))
-      .unwrap()
-      .then(() => {
-        router.push("/boards");
-      })
-      .catch((error) => setErrors(error));
+    try {
+      await dispatch(createBoard(board) as any); // Type assertion to handle thunk
+      router.push("/boards");
+    } catch (error) {
+      // Handle error properly
+      if (error instanceof Error) {
+        setErrors({ message: error.message });
+      } else {
+        setErrors({ message: "An unknown error occurred." });
+      }
+    }
   };
 
   return (
@@ -75,16 +80,14 @@ const CreateBoardPage = () => {
               ) : error ? (
                 <option>Error loading countries</option>
               ) : (
-                countries.map(
-                  (country: { country_code: string; country_name: string }) => (
-                    <option
-                      key={country.country_code}
-                      value={country.country_code}
-                    >
-                      {country.country_name} ({country.country_code})
-                    </option>
-                  )
-                )
+                countries.map((country) => (
+                  <option
+                    key={country.country_code}
+                    value={country.country_code}
+                  >
+                    {country.country_name} ({country.country_code})
+                  </option>
+                ))
               )}
             </select>
           </div>

@@ -1,31 +1,46 @@
-"use client"; // Ensure the component is treated as a client component
+"use client";
 
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createCertificate } from "../../redux/slices/certificateSlice";
-import { useRouter } from "next/navigation"; // Use the correct import for `useRouter` in Next.js app directory
+import { useRouter } from "next/navigation";
 import CertificateForm from "../../components/forms/CertificateForm";
 import Layout from "../../components/Layout";
+
+interface Certificate {
+  name: string;
+  description: string;
+}
+
+interface Errors {
+  message?: string;
+}
 
 const CreateCertificatePage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [certificate, setCertificate] = useState({ name: "", description: "" });
-  const [errors, setErrors] = useState({});
+  const [certificate, setCertificate] = useState<Certificate>({
+    name: "",
+    description: "",
+  });
+  const [errors, setErrors] = useState<Errors>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCertificate({ ...certificate, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(createCertificate(certificate))
-      .unwrap()
-      .then(() => {
-        router.push("/certificates");
-      })
-      .catch((error) => setErrors(error));
+    try {
+      await dispatch(createCertificate(certificate)).unwrap();
+      router.push("/certificates");
+    } catch (error) {
+      // Handle the error by asserting its type and extracting the message
+      const errorMessage =
+        (error as { message?: string })?.message || "An error occurred";
+      setErrors({ message: errorMessage });
+    }
   };
 
   return (

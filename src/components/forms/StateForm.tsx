@@ -1,20 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCountries } from "../../redux/slices/countrySlice"; // Ensure this action is correctly imported
+import { RootState, AppDispatch } from "../../redux/store"; // Import the types for your store
 
-const StateForm = ({ state, onChange, onSubmit, errors }) => {
-  const dispatch = useDispatch();
-  const { countries, loading, error } = useSelector((state) => state.country);
-  const [countryOptions, setCountryOptions] = useState([]);
+interface StateFormProps {
+  state: {
+    country_code: string;
+    state_name: string;
+    state_code: string;
+  };
+  onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  errors: {
+    country_code?: string;
+    state_name?: string;
+    state_code?: string;
+  };
+}
+
+const StateForm: React.FC<StateFormProps> = ({
+  state,
+  onChange,
+  onSubmit,
+  errors,
+}) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { countries, loading, error } = useSelector(
+    (state: RootState) => state.country
+  );
+  const [countryOptions, setCountryOptions] = useState(countries);
 
   useEffect(() => {
     if (countries.length === 0) {
       dispatch(fetchCountries())
         .unwrap()
         .then((data) => {
-          setCountryOptions(data); // Set the available country options
+          setCountryOptions(data);
         })
-        .catch((error) => console.error("Failed to fetch countries:", error));
+        .catch((err) => console.error("Failed to fetch countries:", err));
     } else {
       setCountryOptions(countries);
     }
@@ -94,13 +117,11 @@ const StateForm = ({ state, onChange, onSubmit, errors }) => {
       <button
         type="submit"
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        disabled={loading} // Optional: Disable button during loading
+        disabled={loading}
       >
-        {loading ? "Creating..." : "Create State"}{" "}
-        {/* Optional: Show loading state */}
+        {loading ? "Creating..." : "Create State"}
       </button>
-      {error && <p className="text-red-500 text-xs italic mt-2">{error}</p>}{" "}
-      {/* Optional: Display general error */}
+      {error && <p className="text-red-500 text-xs italic mt-2">{error}</p>}
     </form>
   );
 };

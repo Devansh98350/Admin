@@ -56,7 +56,8 @@ const LanguagesPage = () => {
                     </td>
                     <td className="py-2 px-4">
                       <Link
-                        href={`/languages/${language.id}`}
+                        // href={`/languages/${language.id}`}
+                        href={``}
                         className="text-blue-500 hover:underline"
                       >
                         Edit

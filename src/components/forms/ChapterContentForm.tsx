@@ -1,9 +1,26 @@
+import React, { ChangeEvent, FormEvent } from "react";
+import TextInput from "../TextInput";
+import Button from "../Button";
 
-import React from 'react';
-import TextInput from '../TextInput';
-import Button from '../Button';
+interface ChapterContentFormProps {
+  content: {
+    title: string;
+    content: string;
+  };
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  errors: {
+    title?: string;
+    content?: string;
+  };
+}
 
-const ChapterContentForm = ({ content, onChange, onSubmit, errors }) => (
+const ChapterContentForm: React.FC<ChapterContentFormProps> = ({
+  content,
+  onChange,
+  onSubmit,
+  errors,
+}) => (
   <form onSubmit={onSubmit}>
     <TextInput
       label="Title"
@@ -19,7 +36,7 @@ const ChapterContentForm = ({ content, onChange, onSubmit, errors }) => (
       onChange={onChange}
       error={errors.content}
     />
-    <Button type="submit" label="Save" />
+    <Button type="submit" label="Save" onClick={undefined} />
   </form>
 );
 

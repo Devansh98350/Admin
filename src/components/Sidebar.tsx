@@ -12,31 +12,6 @@ const Sidebar = () => {
               Dashboard
             </div>
           </Link>
-          <Link href="/boards" passHref>
-            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
-              Boards
-            </div>
-          </Link>
-          <Link href="/chapter_contents" passHref>
-            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
-              Chapter Content
-            </div>
-          </Link>
-          <Link href="/chapters" passHref>
-            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
-              Chapters
-            </div>
-          </Link>
-          <Link href="/classes" passHref>
-            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
-              Classes
-            </div>
-          </Link>
-          <Link href="/certificates" passHref>
-            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
-              Certificates
-            </div>
-          </Link>
           <Link href="/countries" passHref>
             <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
               Country
@@ -47,14 +22,19 @@ const Sidebar = () => {
               Language
             </div>
           </Link>
-          <Link href="/profiles" passHref>
-            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
-              Profiles
-            </div>
-          </Link>
           <Link href="/states" passHref>
             <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
               State
+            </div>
+          </Link>
+          <Link href="/boards" passHref>
+            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
+              Boards
+            </div>
+          </Link>
+          <Link href="/classes" passHref>
+            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
+              Classes
             </div>
           </Link>
           <Link href="/subjects" passHref>
@@ -62,6 +42,28 @@ const Sidebar = () => {
               Subjects
             </div>
           </Link>
+          <Link href="/chapters" passHref>
+            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
+              Chapters
+            </div>
+          </Link>
+          <Link href="/chapter_contents" passHref>
+            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
+              Chapter Content
+            </div>
+          </Link>
+
+          {/* <Link href="/certificates" passHref>
+            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
+              Certificates
+            </div>
+          </Link>
+          <Link href="/profiles" passHref>
+            <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
+              Profiles
+            </div>
+          </Link>
+
           <Link href="/tests" passHref>
             <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
               Tests
@@ -86,7 +88,7 @@ const Sidebar = () => {
             <div className="block p-3 bg-gray-100 rounded-lg hover:bg-white">
               Users
             </div>
-          </Link>
+          </Link> */}
         </nav>
       </div>
     </div>

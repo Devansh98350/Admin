@@ -1,6 +1,27 @@
 import React from "react";
 
-const SelectBox = ({ label, name, options = [], value, onChange, error }) => (
+interface Option {
+  value: string | number;
+  label: string;
+}
+
+interface SelectBoxProps {
+  label: string;
+  name: string;
+  options: Option[];
+  value: string | number;
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  error?: string;
+}
+
+const SelectBox: React.FC<SelectBoxProps> = ({
+  label,
+  name,
+  options = [],
+  value,
+  onChange,
+  error,
+}) => (
   <div>
     <label>{label}</label>
     <select name={name} value={value} onChange={onChange}>

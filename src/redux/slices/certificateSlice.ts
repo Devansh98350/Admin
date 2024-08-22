@@ -1,20 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../services/api';
+import { RootState } from '../store'; // Adjust import according to your store setup
 
-export const fetchCertificates = createAsyncThunk('certificates/fetchCertificates', async () => {
-  const response = await axios.get('/certificates/read_certificates_certificates__get');
-  return response.data;
-});
-
-export const createCertificate = createAsyncThunk('certificates/createCertificate', async (certificate) => {
-  const response = await axios.post('/certificates/create_certificate_certificates__post', certificate);
-  return response.data;
-});
+interface Certificate {
+  name: string;
+  description: string;
+}
 
 interface CertificateState {
-  certificates: any[];  // Replace `any[]` with your actual certificate type if available
+  certificates: Certificate[];
   loading: boolean;
-  error: string | null;  // Allow `null` or `string`
+  error: string | null;
 }
 
 const initialState: CertificateState = {
@@ -23,25 +18,42 @@ const initialState: CertificateState = {
   error: null,
 };
 
+// Async thunk action
+export const createCertificate = createAsyncThunk<
+  Certificate, // Return type
+  Certificate, // Argument type
+  { rejectValue: string } // Reject value type
+>(
+  'certificates/createCertificate',
+  async (certificate, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(certificate),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create certificate');
+      }
+      return await response.json();
+    } catch (error) {
+      // Cast the error to string or an appropriate type
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
 const certificateSlice = createSlice({
-  name: 'certificate',
+  name: 'certificates',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCertificates.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchCertificates.fulfilled, (state, action) => {
-        state.loading = false;
-        state.certificates = action.payload;
-      })
-      .addCase(fetchCertificates.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "Unknown error";  // Handle undefined case
-      })
       .addCase(createCertificate.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(createCertificate.fulfilled, (state, action) => {
         state.loading = false;
@@ -49,7 +61,8 @@ const certificateSlice = createSlice({
       })
       .addCase(createCertificate.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Unknown error";  // Handle undefined case
+        // Handle error as a string
+        state.error = action.payload as string;
       });
   },
 });
