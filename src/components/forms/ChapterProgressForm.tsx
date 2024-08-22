@@ -36,7 +36,7 @@ const ChapterProgressForm: React.FC<ChapterProgressFormProps> = ({
       onChange={onChange}
       error={errors.progress}
     />
-    <Button type="submit" label="Save" onClick={undefined} />
+    <Button type="submit" label="Save" />
   </form>
 );
 

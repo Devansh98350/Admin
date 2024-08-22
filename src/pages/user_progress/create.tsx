@@ -6,16 +6,17 @@ import { createUserProgress } from "../../redux/slices/userProgressSlice";
 import { useRouter } from "next/navigation"; // Use the correct import for `useRouter` in Next.js app directory
 import UserProgressForm from "../../components/forms/UserProgressForm";
 import Layout from "../../components/Layout";
+import { AppDispatch } from "../../redux/store"; // Import the correct type for dispatch
 
-const CreateUserProgressPage = () => {
-  const dispatch = useDispatch();
+const CreateUserProgressPage: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const [progress, setProgress] = useState({
     user_id: "",
     chapter_id: "",
     progress: "",
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,7 +30,13 @@ const CreateUserProgressPage = () => {
       .then(() => {
         router.push("/user_progress");
       })
-      .catch((error) => setErrors(error));
+      .catch((error: any) => {
+        if (error instanceof Error) {
+          setErrors({ form: error.message });
+        } else {
+          setErrors({ form: "An unknown error occurred." });
+        }
+      });
   };
 
   return (

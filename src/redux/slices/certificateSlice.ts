@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../store'; // Adjust import according to your store setup
 
 interface Certificate {
+  id?: string; // Add an id field if needed
   name: string;
   description: string;
 }
@@ -18,7 +19,27 @@ const initialState: CertificateState = {
   error: null,
 };
 
-// Async thunk action
+// Async thunk to fetch certificates
+export const fetchCertificates = createAsyncThunk<
+  Certificate[], // Return type
+  void, // Argument type (none in this case)
+  { rejectValue: string } // Reject value type
+>(
+  'certificates/fetchCertificates',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/certificates');
+      if (!response.ok) {
+        throw new Error('Failed to fetch certificates');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+// Async thunk to create a certificate
 export const createCertificate = createAsyncThunk<
   Certificate, // Return type
   Certificate, // Argument type
@@ -39,7 +60,6 @@ export const createCertificate = createAsyncThunk<
       }
       return await response.json();
     } catch (error) {
-      // Cast the error to string or an appropriate type
       return rejectWithValue((error as Error).message);
     }
   }
@@ -51,6 +71,18 @@ const certificateSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchCertificates.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCertificates.fulfilled, (state, action) => {
+        state.loading = false;
+        state.certificates = action.payload;
+      })
+      .addCase(fetchCertificates.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       .addCase(createCertificate.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -61,7 +93,6 @@ const certificateSlice = createSlice({
       })
       .addCase(createCertificate.rejected, (state, action) => {
         state.loading = false;
-        // Handle error as a string
         state.error = action.payload as string;
       });
   },

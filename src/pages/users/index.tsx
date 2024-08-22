@@ -1,14 +1,14 @@
-"use client";
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
 import { fetchUsers } from "../../redux/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import Layout from "../../components/Layout";
+import React, { useEffect } from "react";
 
-const UsersPage = () => {
-  const dispatch = useDispatch();
+const UsersPage: React.FC = () => {
+  // Use AppDispatch to type the dispatch function correctly
+  const dispatch: AppDispatch = useDispatch();
 
-  // Use a safer way to select users
   const users = useSelector((state: any) => state.user.users || []);
   const loading = useSelector((state: any) => state.user.loading);
 

@@ -1,46 +1,41 @@
-"use client";
+"use client"; // Ensure the component is treated as a client component
 
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createCertificate } from "../../redux/slices/certificateSlice";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Use the correct import for `useRouter` in Next.js app directory
 import CertificateForm from "../../components/forms/CertificateForm";
 import Layout from "../../components/Layout";
-
-interface Certificate {
-  name: string;
-  description: string;
-}
-
-interface Errors {
-  message?: string;
-}
+import { AppDispatch } from "../../redux/store"; // Make sure this is correctly imported
 
 const CreateCertificatePage = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
-  const [certificate, setCertificate] = useState<Certificate>({
-    name: "",
-    description: "",
-  });
-  const [errors, setErrors] = useState<Errors>({});
+  const [certificate, setCertificate] = useState<{
+    name: string;
+    description: string;
+  }>({ name: "", description: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCertificate({ ...certificate, [name]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await dispatch(createCertificate(certificate)).unwrap();
-      router.push("/certificates");
-    } catch (error) {
-      // Handle the error by asserting its type and extracting the message
-      const errorMessage =
-        (error as { message?: string })?.message || "An error occurred";
-      setErrors({ message: errorMessage });
-    }
+    dispatch(createCertificate(certificate))
+      .unwrap()
+      .then(() => {
+        router.push("/certificates");
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Error) {
+          setErrors({ general: error.message });
+        } else {
+          setErrors({ general: "An unknown error occurred." });
+        }
+      });
   };
 
   return (

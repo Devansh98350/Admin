@@ -3,16 +3,19 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchChapterContents } from "../../redux/slices/chapterContentSlice";
 import Link from "next/link";
 import Layout from "../../components/Layout";
+import { AppDispatch, RootState } from "../../redux/store"; // Import AppDispatch and RootState
 
 const ChapterContentsPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // Type the dispatch function
   const [selectedContent, setSelectedContent] = useState<any>(null);
 
   const contents = useSelector(
-    (state: any) => state.chapterContent.contents || []
+    (state: RootState) => state.chapterContent.contents || []
+  ); // Type the state
+  const loading = useSelector(
+    (state: RootState) => state.chapterContent.loading
   );
-  const loading = useSelector((state: any) => state.chapterContent.loading);
-  const error = useSelector((state: any) => state.chapterContent.error);
+  const error = useSelector((state: RootState) => state.chapterContent.error);
 
   useEffect(() => {
     dispatch(fetchChapterContents());
@@ -104,11 +107,7 @@ const ChapterContentsPage = () => {
                     {truncateSingleWord(content.voice_generation_json)}
                   </td>
                   <td className="py-2 px-4 flex items-center space-x-2">
-                    <Link
-                      // href={`/chapter_contents/${content.id}`}
-                      href={``}
-                      className="text-blue-500 hover:underline"
-                    >
+                    <Link href={``} className="text-blue-500 hover:underline">
                       Edit
                     </Link>
                     <button

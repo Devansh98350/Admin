@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUserProgresses } from "../../redux/slices/userProgressSlice";
 import Link from "next/link";
 import Layout from "../../components/Layout";
+import { AppDispatch } from "../../redux/store"; // Import the correct type for dispatch
 
-const UserProgressPage = () => {
-  const dispatch = useDispatch();
+const UserProgressPage: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
+
   const userProgresses = useSelector(
     (state: any) => state.userProgress.userProgresses || []
   );
-
   const loading = useSelector((state: any) => state.userProgress.loading);
 
   useEffect(() => {
@@ -33,7 +34,11 @@ const UserProgressPage = () => {
           {userProgresses.map((userProgress: any) => (
             <li key={userProgress.id}>
               {userProgress.progress} -{" "}
-              <Link href={`/user_progress/${progress.id}`}>Edit</Link>
+              <Link href={`/user_progress/${userProgress.id}`}>
+                <span className="text-blue-500 cursor-pointer hover:underline">
+                  Edit
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

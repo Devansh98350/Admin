@@ -6,12 +6,13 @@ import { createUser } from "../../redux/slices/userSlice";
 import { useRouter } from "next/navigation"; // Use the correct import for `useRouter` in Next.js app directory
 import UserForm from "../../components/forms/UserForm";
 import Layout from "../../components/Layout";
+import { AppDispatch } from "../../redux/store"; // Import the correct type for dispatch
 
 const CreateUserPage = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const [user, setUser] = useState({ username: "", email: "", password: "" });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,7 +26,13 @@ const CreateUserPage = () => {
       .then(() => {
         router.push("/users");
       })
-      .catch((error) => setErrors(error));
+      .catch((error: any) => {
+        if (error instanceof Error) {
+          setErrors({ form: error.message });
+        } else {
+          setErrors({ form: "An unknown error occurred." });
+        }
+      });
   };
 
   return (

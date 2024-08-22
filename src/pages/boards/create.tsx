@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { createBoard } from "../../redux/slices/boardSlice";
 import { fetchCountries } from "../../redux/slices/countrySlice";
 import Layout from "../../components/Layout";
-import { RootState } from "../../redux/store"; // Import RootState
+import { RootState, AppDispatch } from "../../redux/store"; // Import RootState and AppDispatch
 
 const CreateBoardPage = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const [board, setBoard] = useState({
     board_code: "",
@@ -24,13 +24,17 @@ const CreateBoardPage = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchCountries() as any); // Type assertion to handle thunk
+    dispatch(fetchCountries())
+      .unwrap()
+      .catch((error) => {
+        setErrors({ message: "Failed to load countries." });
+      });
   }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await dispatch(createBoard(board) as any); // Type assertion to handle thunk
+      await dispatch(createBoard(board)).unwrap(); // Unwrap to handle promise
       router.push("/boards");
     } catch (error) {
       // Handle error properly

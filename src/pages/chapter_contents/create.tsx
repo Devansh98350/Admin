@@ -1,14 +1,15 @@
-"use client"; // Ensure the component is treated as a client component
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createChapterContent } from "../../redux/slices/chapterContentSlice";
-import { fetchChapters } from "../../redux/slices/chapterSlice"; // Ensure you import the thunk for fetching chapters
-import { useRouter } from "next/navigation"; // Use the correct import for `useRouter` in Next.js app directory
+import { fetchChapters } from "../../redux/slices/chapterSlice";
+import { useRouter } from "next/navigation";
 import Layout from "../../components/Layout";
+import { AppDispatch, RootState } from "../../redux/store";
 
 const CreateChapterContentPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [content, setContent] = useState({
     chapter_code: "",
@@ -18,13 +19,14 @@ const CreateChapterContentPage = () => {
     descriptive_content: "",
     image_list: "",
     voice_generation_json: "",
+    paragraph_number: 0, // Added paragraph_number field
   });
-  const [errors, setErrors] = useState<any>({}); // Update error type as needed
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const chapters = useSelector((state: any) => state.chapter.chapters); // Ensure you're selecting the chapters from state
+  const chapters = useSelector((state: RootState) => state.chapter.chapters);
 
   useEffect(() => {
-    dispatch(fetchChapters()); // Fetch chapters on component mount
+    dispatch(fetchChapters());
   }, [dispatch]);
 
   const handleChange = (
@@ -36,14 +38,14 @@ const CreateChapterContentPage = () => {
     setContent({ ...content, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(createChapterContent({ ...content, paragraph_number: 0 })) // Include fixed paragraph_number
-      .unwrap()
-      .then(() => {
-        router.push("/chapter_contents");
-      })
-      .catch((error) => setErrors(error));
+    try {
+      await dispatch(createChapterContent({ ...content })).unwrap();
+      router.push("/chapter_contents");
+    } catch (error) {
+      setErrors(error as Record<string, string>);
+    }
   };
 
   return (
@@ -64,7 +66,7 @@ const CreateChapterContentPage = () => {
               className="w-full px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
             >
               <option value="">Select Chapter Code</option>
-              {chapters.map((chapter: any) => (
+              {chapters.map((chapter) => (
                 <option key={chapter.chapter_code} value={chapter.chapter_code}>
                   {chapter.chapter_code}
                 </option>
@@ -179,6 +181,25 @@ const CreateChapterContentPage = () => {
             {errors.voice_generation_json && (
               <p className="text-red-500 text-xs mt-1">
                 {errors.voice_generation_json}
+              </p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Paragraph Number
+            </label>
+            <input
+              type="number"
+              name="paragraph_number"
+              value={content.paragraph_number}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+              placeholder="Enter paragraph number"
+            />
+            {errors.paragraph_number && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.paragraph_number}
               </p>
             )}
           </div>
